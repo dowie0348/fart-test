@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>뿜뿜 방귀병 테스트 !! 설마 나도 방귀병?</title>
+    <!-- Tailwind CSS 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 구글 폰트 (Jua - 동글동글하고 귀여운 어린이 폰트) -->
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Jua', sans-serif;
+            background: linear-gradient(135deg, #fef08a 0%, #fed7aa 50%, #fbcfe8 100%);
+            min-height: 100vh;
+        }
+        .bounce-custom {
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .shake-custom {
+            animation: shake 0.5s infinite;
+        }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-3px, 0px) rotate(-1deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            80% { transform: translate(1px, -1px) rotate(1deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-4">
+
+    <!-- 메인 컨테이너 -->
+    <div class="max-w-2xl w-full bg-white rounded-3xl shadow-2xl p-6 md:p-10 border-4 border-orange-400 relative overflow-hidden">
+        
+        <!-- 상단 헤더 -->
+        <div class="text-center mb-8">
+            <span class="inline-block bg-red-100 text-red-600 px-4 py-1 rounded-full text-sm md:text-base font-bold mb-2">국어 3학년 2학기 4단원</span>
+            <h1 class="text-3xl md:text-4xl text-orange-600 font-extrabold drop-shadow-md">💨 뿜뿜 방귀병 테스트 !! 💨</h1>
+            <p class="text-gray-600 mt-1 text-sm md:text-base">설마 나도 방귀병에 걸렸을까요? 올바른 높임 표현으로 바꾸어 적어보세요!</p>
+        </div>
+
+        <!-- 시작 화면 -->
+        <div id="start-screen" class="text-center py-6">
+            <div class="text-6xl mb-4 bounce-custom">🤢</div>
+            <p class="text-lg text-gray-700 mb-6">"어 엉! 뿡뿡 방귀 냄새가 나기 전에 빨리 높임말로 치료하자!"</p>
+            <div class="bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-4 mb-6 text-left text-sm md:text-base text-gray-700">
+                <p class="font-bold mb-1 text-orange-600">📌 참여 방법:</p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>총 6문제가 출제됩니다.</li>
+                    <li>반말이나 잘못된 표현을 보고 <strong>올바른 높임 표현</strong>을 타자로 적어주세요.</li>
+                    <li>띄어쓰기나 맞춤법이 조금 달라도 정답으로 인정해 드려요!</li>
+                </ul>
+            </div>
+            <button onclick="startTest()" class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-xl py-4 rounded-2xl shadow-lg transform transition active:scale-95">
+                테스트 시작하기 🚀
+            </button>
+        </div>
+
+        <!-- 퀴즈 진행 화면 -->
+        <div id="quiz-screen" class="hidden">
+            <!-- 진행 상태 바 -->
+            <div class="flex justify-between items-center mb-4 text-sm font-bold text-gray-500">
+                <span id="question-counter">문제 1 / 6</span>
+                <span id="score-badge" class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full">맞춘 개수: 0</span>
+            </div>
+            <div class="w-full bg-gray-200 h-3 rounded-full mb-6 overflow-hidden">
+                <div id="progress-bar" class="bg-orange-500 h-full transition-all duration-300" style="width: 16.66%;"></div>
+            </div>
+
+            <!-- 문제 카드 -->
+            <div id="question-card" class="bg-orange-50 border-2 border-orange-200 rounded-2xl p-6 mb-6 text-center">
+                <span class="inline-block bg-orange-500 text-white text-xs px-3 py-1 rounded-full mb-3" id="q-category">상황 1</span>
+                <p class="text-gray-500 text-sm mb-1">다음 문장을 올바른 높임 표현으로 바꾸어 보세요.</p>
+                <h2 id="q-text" class="text-2xl md:text-3xl font-bold text-gray-800 mb-4">"어머니, 이 옷 예뻐"</h2>
+                
+                <!-- 입력 칸 -->
+                <input type="text" id="user-answer" placeholder="여기에 올바른 높임 표현을 타자로 적어보세요" 
+                    class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:border-orange-500 text-center bg-white shadow-inner mb-3"
+                    onkeypress="checkEnter(event)">
+                
+                <button onclick="submitAnswer()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-md transition">
+                    정답 제출하기 ✨
+                </button>
+            </div>
+
+            <!-- 피드백 메시지 박스 -->
+            <div id="feedback-box" class="hidden p-4 rounded-xl text-center font-bold text-lg mb-4"></div>
+        </div>
+
+        <!-- 결과 발표 화면 -->
+        <div id="result-screen" class="hidden text-center py-4">
+            <div id="result-icon" class="text-7xl mb-3 bounce-custom">🎉</div>
+            <h2 id="result-title" class="text-3xl md:text-4xl font-extrabold mb-2">결과 발표</h2>
+            <div class="text-xl font-bold text-gray-700 mb-4" id="result-score-text">총 6문제 중 0문제를 맞혔어요!</div>
+            
+            <div id="result-desc" class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-6 mb-6 text-gray-700 text-base md:text-lg leading-relaxed">
+                <!-- 결과 설명 -->
+            </div>
+
+            <div class="flex gap-4">
+                <button onclick="restartTest()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-xl transition">
+                    다시 테스트하기 🔄
+                </button>
+                <button onclick="showReview()" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-md transition">
+                    정답 확인하기 🔍
+                </button>
+            </div>
+        </div>
+
+        <!-- 정답 확인 및 처방전 화면 -->
+        <div id="review-screen" class="hidden">
+            <h3 class="text-2xl font-bold text-orange-600 mb-4 text-center">🩺 방귀병 탈출 처방전 🩺</h3>
+            <div id="review-list" class="space-y-3 mb-6 max-h-96 overflow-y-auto pr-2">
+                <!-- 자바스크립트로 채워짐 -->
+            </div>
+            <button onclick="restartTest()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-md transition">
+                처음으로 돌아가기 🏠
+            </button>
+        </div>
+
+    </div>
+
+    <!-- JavaScript 로직 -->
+    <script>
+        // 교과서 및 슬라이드 기반 방귀병 테스트 문제 데이터
+        const questions = [
+            {
+                category: "1번 문제",
+                original: "어머니, 이 옷 예뻐",
+                answers: ["어머니, 이 옷 예뻐요", "어머니 이 옷 예뻐요", "어머니, 이 옷이 예뻐요"],
+                hint: "말끝에 '-요'를 붙여보세요!"
+            },
+            {
+                category: "2번 문제",
+                original: "이거 삼촌이 사줬어.",
+                answers: ["이거 삼촌께서 사주셨어.", "이거 삼촌께서 사주셨어요.", "이거 삼촌이 사주셨어요.", "이거 삼촌께서 사주셨어", "이거 삼촌께서 사주셨어요"],
+                hint: "어른을 높이는 '-께서', '-시-'를 사용하고 '-요'를 붙여보세요."
+            },
+            {
+                category: "3번 문제",
+                original: "할아버지가 노래를 부른다",
+                answers: ["할아버지께서 노래를 부르신다.", "할아버지께서 노래를 부르신다", "할아버지께서 노래를 부르십니다."],
+                hint: "할아버지는 어른이니까 '-께서', '-시-'를 넣어보세요!"
+            },
+            {
+                category: "4번 문제",
+                original: "선생님이 뭐래?",
+                answers: ["선생님께서 뭐라고 하셨어?", "선생님께서 뭐라고 하셨어요?", "선생님이 뭐라고 하셨어?", "선생님께서 뭐라고 하셨어", "선생님께서 뭐라고 하셨어요"],
+                hint: "선생님의 말씀은 '뭐라고 하셨어?' 또는 '무슨 말씀하셨어?'로 높여요."
+            },
+            {
+                category: "5번 문제",
+                original: "선생님, 내가 한 거 아닌데요",
+                answers: ["선생님, 제가 한 거 아니에요.", "선생님 제가 한 거 아니에요", "선생님, 제가 한 게 아니에요.", "선생님, 제가 한 거 아니에요"],
+                hint: "나를 낮추는 말 '내'를 '저'로 바꾸고 올바른 높임말로 써보세요."
+            },
+            {
+                category: "6번 문제",
+                original: "아버지는 자고 있어",
+                answers: ["아버지께서는 주무시고 계신다.", "아버지께서는 주무시고 계셔.", "아버지께서 주무시고 계신다.", "아버지께서 주무셔.", "아버지는 주무시고 계신다."],
+                hint: "자는 것은 '주무시다', '있어'는 '계시다'를 써요."
+            }
+        ];
+
+        let currentIdx = 0;
+        let score = 0;
+        let userResults = [];
+
+        // 💨 Web Audio API를 활용한 실감 나는 방귀 소리 효과음 생성 함수
+        function playFartSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 오실레이터(소리 진동) 생성 - 톱니파(Sawtooth)가 방귀 소리에 찰떡입니다!
+                const osc = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                const filter = audioCtx.createBiquadFilter();
+
+                osc.type = 'sawtooth';
+                
+                // 주파수를 빠르게 변동시켜 뿌루룩-뿡 효과 만들기
+                const now = audioCtx.currentTime;
+                osc.frequency.setValueAtTime(80, now);
+                osc.frequency.exponentialRampToValueAtTime(35, now + 0.15);
+                osc.frequency.exponentialRampToValueAtTime(70, now + 0.3);
+                osc.frequency.exponentialRampToValueAtTime(30, now + 0.5);
+
+                // 저역 필터로 구릿한(?) 중저음 만들기
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(400, now);
+
+                // 볼륨 설정 (점점 작아지도록)
+                gainNode.gain.setValueAtTime(0.7, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+
+                // 연결
+                osc.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } catch (e) {
+                console.log("브라우저 정책으로 오디오가 차단되었을 수 있습니다.", e);
+            }
+        }
+
+        function startTest() {
+            currentIdx = 0;
+            score = 0;
+            userResults = [];
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentIdx];
+            document.getElementById('question-counter').innerText = `문제 ${currentIdx + 1} / ${questions.length}`;
+            document.getElementById('score-badge').innerText = `맞춘 개수: ${score}`;
+            document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / questions.length) * 100}%`;
+            
+            document.getElementById('q-category').innerText = q.category;
+            document.getElementById('q-text').innerText = `"${q.original}"`;
+            document.getElementById('user-answer').value = '';
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('user-answer').focus();
+        }
+
+        function checkEnter(event) {
+            if (event.key === 'Enter') {
+                submitAnswer();
+            }
+        }
+
+        function submitAnswer() {
+            const userIn = document.getElementById('user-answer').value.trim();
+            if (!userIn) {
+                alert("답변을 입력해 주세요!");
+                return;
+            }
+
+            const q = questions[currentIdx];
+            const cleanUserIn = userIn.replace(/\s+/g, '');
+            const isCorrect = q.answers.some(ans => ans.replace(/\s+/g, '') === cleanUserIn);
+
+            if (isCorrect) {
+                score++;
+            }
+
+            userResults.push({
+                original: q.original,
+                userAnswer: userIn,
+                correctAnswer: q.answers[0],
+                isCorrect: isCorrect
+            });
+
+            currentIdx++;
+            if (currentIdx < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            const resultScreen = document.getElementById('result-screen');
+            resultScreen.classList.remove('hidden');
+
+            const titleEl = document.getElementById('result-title');
+            const iconEl = document.getElementById('result-icon');
+            const descEl = document.getElementById('result-desc');
+            const scoreText = document.getElementById('result-score-text');
+
+            scoreText.innerText = `총 6문제 중 ${score}문제를 맞혔어요!`;
+
+            if (score === 6) {
+                // 방귀병 탈출 완료!
+                iconEl.innerText = "🦋✨";
+                iconEl.className = "text-7xl mb-3 bounce-custom";
+                titleEl.innerText = "🎉 방귀병 완벽 탈출! (최우수 의사선생님)";
+                titleEl.className = "text-3xl md:text-4xl font-extrabold text-green-600 mb-2";
+                descEl.innerHTML = `
+                    <p class="font-bold text-green-700 mb-2">대단합니다! 방독면을 완전히 벗었어요!</p>
+                    <p>높임 표현의 달인이 되었네요. 주변 어른들께 언제나 예의 바르고 공손한 말을 써서 뿡뿡 방귀병을 완전히 물리쳤습니다!</p>
+                `;
+            } else if (score >= 4) {
+                // 방귀병 의심 - 방귀 소리 재생!
+                playFartSound();
+                iconEl.innerText = "💨⚠️";
+                iconEl.className = "text-7xl mb-3 shake-custom";
+                titleEl.innerText = "🟡 방귀병 의심! (치료가 조금 필요해요)";
+                titleEl.className = "text-3xl md:text-4xl font-extrabold text-orange-500 mb-2";
+                descEl.innerHTML = `
+                    <p class="font-bold text-orange-600 mb-2">아슬아슬했어요! 뿡~ 냄새가 살짝 날랑말랑해요!</p>
+                    <p>몇몇 문장에서 높임 표현이 헷갈렸나 봐요. 교과서의 '처방전'을 다시 읽고 완벽하게 방귀병을 고쳐볼까요?</p>
+                `;
+            } else {
+                // 방귀병 확정 - 요란한 방귀 소리 두 번 연속 재생!
+                playFartSound();
+                setTimeout(() => playFartSound(), 400);
+                iconEl.innerText = "🤢🚨";
+                iconEl.className = "text-7xl mb-3 shake-custom";
+                titleEl.innerText = "🚨 방귀병 확정! (긴급 입원 필요)";
+                titleEl.className = "text-3xl md:text-4xl font-extrabold text-red-600 mb-2";
+                descEl.innerHTML = `
+                    <p class="font-bold text-red-700 mb-2">뿌루룩 뽀룩 뿡! 앗, 구릿한 냄새가 진동을 해요!</p>
+                    <p>높임 표현을 쓰지 않아 방귀병에 걸렸어요! 얼른 '말끝에 -요 붙이기', '어른을 높이는 말 쓰기' 처방전을 복습하고 다시 도전하세요!</p>
+                `;
+            }
+        }
+
+        function showReview() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('review-screen').classList.remove('hidden');
+
+            const listContainer = document.getElementById('review-list');
+            listContainer.innerHTML = '';
+
+            userResults.forEach((res, idx) => {
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-xl border-2 ${res.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`;
+                div.innerHTML = `
+                    <p class="text-xs font-bold text-gray-500 mb-1">문제 ${idx + 1}</p>
+                    <p class="text-sm font-semibold text-gray-700">원래 문장: <span class="text-orange-600">"${res.original}"</span></p>
+                    <p class="text-sm text-gray-700">내가 쓴 답: <span class="font-bold ${res.isCorrect ? 'text-green-600' : 'text-red-600'}">${res.userAnswer || '(공백)'}</span> ${res.isCorrect ? '✨정답!' : '❌오답'}</p>
+                    ${!res.isCorrect ? `<p class="text-sm text-blue-600 font-bold mt-1">💡 올바른 처방: ${res.correctAnswer}</p>` : ''}
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+
+        function restartTest() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('review-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
