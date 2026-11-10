@@ -100,8 +100,18 @@
             <h2 id="result-title" class="text-3xl md:text-4xl font-extrabold mb-2">결과 발표</h2>
             <div class="text-xl font-bold text-gray-700 mb-4" id="result-score-text">총 6문제 중 0문제를 맞혔어요!</div>
             
-            <div id="result-desc" class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-6 mb-6 text-gray-700 text-base md:text-lg leading-relaxed">
+            <div id="result-desc" class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-5 mb-6 text-gray-700 text-base leading-relaxed">
                 <!-- 결과 설명 -->
+            </div>
+
+            <!-- 📝 결과 화면 내에서 바로 확인하는 문제별 정답/오답 비교 영역 -->
+            <div class="mb-6 text-left">
+                <h3 class="text-xl font-bold text-orange-600 mb-3 flex items-center gap-2">
+                    <span>🩺 내 답변 & 올바른 처방전 확인하기</span>
+                </h3>
+                <div id="result-review-list" class="space-y-3 max-h-64 overflow-y-auto pr-2">
+                    <!-- 자바스크립트로 동적 생성됨 -->
+                </div>
             </div>
 
             <div class="flex gap-4">
@@ -109,7 +119,7 @@
                     다시 테스트하기 🔄
                 </button>
                 <button onclick="showReview()" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-md transition">
-                    정답 확인하기 🔍
+                    처방전 모아보기 🔍
                 </button>
             </div>
         </div>
@@ -129,42 +139,42 @@
 
     <!-- JavaScript 로직 -->
     <script>
-        // 교과서 및 슬라이드 기반 방귀병 테스트 문제 데이터
+        // 교과서 및 슬라이드 기반 방귀병 테스트 문제 데이터 (다양한 표현과 문장부호 무시 가능하도록 확장)
         const questions = [
             {
                 category: "1번 문제",
                 original: "어머니, 이 옷 예뻐",
-                answers: ["어머니, 이 옷 예뻐요", "어머니 이 옷 예뻐요", "어머니, 이 옷이 예뻐요"],
+                answers: ["어머니이옷예뻐요", "어머니이옷이예뻐요"],
                 hint: "말끝에 '-요'를 붙여보세요!"
             },
             {
                 category: "2번 문제",
                 original: "이거 삼촌이 사줬어.",
-                answers: ["이거 삼촌께서 사주셨어.", "이거 삼촌께서 사주셨어요.", "이거 삼촌이 사주셨어요.", "이거 삼촌께서 사주셨어", "이거 삼촌께서 사주셨어요"],
+                answers: ["이거삼촌께서사주셨어", "이거삼촌께서사주셨어요", "이거삼촌이사주셨어요", "삼촌께서사주셨어요", "삼촌이사주셨어요"],
                 hint: "어른을 높이는 '-께서', '-시-'를 사용하고 '-요'를 붙여보세요."
             },
             {
                 category: "3번 문제",
                 original: "할아버지가 노래를 부른다",
-                answers: ["할아버지께서 노래를 부르신다.", "할아버지께서 노래를 부르신다", "할아버지께서 노래를 부르십니다."],
+                answers: ["할아버지께서노래를부르신다", "할아버지께서노래를부르십니다", "할아버님께서노래를부르신다"],
                 hint: "할아버지는 어른이니까 '-께서', '-시-'를 넣어보세요!"
             },
             {
                 category: "4번 문제",
                 original: "선생님이 뭐래?",
-                answers: ["선생님께서 뭐라고 하셨어?", "선생님께서 뭐라고 하셨어요?", "선생님이 뭐라고 하셨어?", "선생님께서 뭐라고 하셨어", "선생님께서 뭐라고 하셨어요"],
+                answers: ["선생님께서뭐라고하셨어", "선생님께서뭐라고하셨어요", "선생님께서뭐라고하셔", "선생님께서뭐라고하시니", "선생님께서무슨말씀하셨어", "선생님께서무슨말씀하셨어요", "선생님께서말씀하셨어"],
                 hint: "선생님의 말씀은 '뭐라고 하셨어?' 또는 '무슨 말씀하셨어?'로 높여요."
             },
             {
                 category: "5번 문제",
                 original: "선생님, 내가 한 거 아닌데요",
-                answers: ["선생님, 제가 한 거 아니에요.", "선생님 제가 한 거 아니에요", "선생님, 제가 한 게 아니에요.", "선생님, 제가 한 거 아니에요"],
+                answers: ["선생님제가한거아니에요", "선생님제가한게아니에요", "선생님제가한것이아니에요", "선생님제가한거아닙니다", "선생님제가한게아닙니다"],
                 hint: "나를 낮추는 말 '내'를 '저'로 바꾸고 올바른 높임말로 써보세요."
             },
             {
                 category: "6번 문제",
                 original: "아버지는 자고 있어",
-                answers: ["아버지께서는 주무시고 계신다.", "아버지께서는 주무시고 계셔.", "아버지께서 주무시고 계신다.", "아버지께서 주무셔.", "아버지는 주무시고 계신다."],
+                answers: ["아버지께서주무시고계신다", "아버지께서는주무시고계신다", "아버지께서주무시고계셔", "아버지께서는주무시고계셔", "아버지께서주무신다", "아버지께서는주무신다", "아버지께서주무셔", "아버지주무시고계신다", "아버지주무시고계셔"],
                 hint: "자는 것은 '주무시다', '있어'는 '계시다'를 써요."
             }
         ];
@@ -248,8 +258,13 @@
             }
 
             const q = questions[currentIdx];
-            const cleanUserIn = userIn.replace(/\s+/g, '');
-            const isCorrect = q.answers.some(ans => ans.replace(/\s+/g, '') === cleanUserIn);
+            
+            // 공백과 문장부호(마침표, 물음표, 쉼표, 느낌표, 따옴표 등)를 모두 제거하여 비교
+            const cleanUserIn = userIn.replace(/[\s\.,\?!~\"\'']/g, '');
+            const isCorrect = q.answers.some(ans => {
+                const cleanAns = ans.replace(/[\s\.,\?!~\"\'']/g, '');
+                return cleanAns === cleanUserIn;
+            });
 
             if (isCorrect) {
                 score++;
@@ -289,8 +304,8 @@
                 titleEl.innerText = "🎉 방귀병 완벽 탈출! (최우수 의사선생님)";
                 titleEl.className = "text-3xl md:text-4xl font-extrabold text-green-600 mb-2";
                 descEl.innerHTML = `
-                    <p class="font-bold text-green-700 mb-2">대단합니다! 방독면을 완전히 벗었어요!</p>
-                    <p>높임 표현의 달인이 되었네요. 주변 어른들께 언제나 예의 바르고 공손한 말을 써서 뿡뿡 방귀병을 완전히 물리쳤습니다!</p>
+                    <p class="font-bold text-green-700 mb-1">대단합니다! 방독면을 완전히 벗었어요!</p>
+                    <p class="text-sm">높임 표현의 달인이 되었네요. 아래에서 내가 쓴 답과 정답을 확인해보세요!</p>
                 `;
             } else if (score >= 4) {
                 // 방귀병 의심 - 방귀 소리 재생!
@@ -300,8 +315,8 @@
                 titleEl.innerText = "🟡 방귀병 의심! (치료가 조금 필요해요)";
                 titleEl.className = "text-3xl md:text-4xl font-extrabold text-orange-500 mb-2";
                 descEl.innerHTML = `
-                    <p class="font-bold text-orange-600 mb-2">아슬아슬했어요! 뿡~ 냄새가 살짝 날랑말랑해요!</p>
-                    <p>몇몇 문장에서 높임 표현이 헷갈렸나 봐요. 교과서의 '처방전'을 다시 읽고 완벽하게 방귀병을 고쳐볼까요?</p>
+                    <p class="font-bold text-orange-600 mb-1">아슬아슬했어요! 뿡~ 냄새가 살짝 날랑말랑해요!</p>
+                    <p class="text-sm">틀린 문장을 확인하고 올바른 높임 표현을 다시 기억해봐요!</p>
                 `;
             } else {
                 // 방귀병 확정 - 요란한 방귀 소리 두 번 연속 재생!
@@ -312,10 +327,28 @@
                 titleEl.innerText = "🚨 방귀병 확정! (긴급 입원 필요)";
                 titleEl.className = "text-3xl md:text-4xl font-extrabold text-red-600 mb-2";
                 descEl.innerHTML = `
-                    <p class="font-bold text-red-700 mb-2">뿌루룩 뽀룩 뿡! 앗, 구릿한 냄새가 진동을 해요!</p>
-                    <p>높임 표현을 쓰지 않아 방귀병에 걸렸어요! 얼른 '말끝에 -요 붙이기', '어른을 높이는 말 쓰기' 처방전을 복습하고 다시 도전하세요!</p>
+                    <p class="font-bold text-red-700 mb-1">뿌루룩 뽀룩 뿡! 앗, 구릿한 냄새가 진동을 해요!</p>
+                    <p class="text-sm">아래의 정답과 비교해보고 어디가 틀렸는지 꼼꼼히 살펴보세요!</p>
                 `;
             }
+
+            // 결과 화면 내에서 바로 볼 수 있는 정답/오답 리스트 채우기
+            const resultReviewList = document.getElementById('result-review-list');
+            resultReviewList.innerHTML = '';
+
+            userResults.forEach((res, idx) => {
+                const div = document.createElement('div');
+                div.className = `p-3 rounded-xl border-2 text-sm ${res.isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-gray-600">문제 ${idx + 1}. <span class="text-orange-600">"${res.original}"</span></span>
+                        <span class="font-bold px-2 py-0.5 rounded text-xs ${res.isCorrect ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}">${res.isCorrect ? '정답 ✨' : '오답 ❌'}</span>
+                    </div>
+                    <p class="text-gray-700">내가 쓴 답: <span class="font-semibold">${res.userAnswer || '(공백)'}</span></p>
+                    ${!res.isCorrect ? `<p class="text-blue-600 font-semibold mt-1">💡 올바른 처방: ${res.correctAnswer}</p>` : ''}
+                `;
+                resultReviewList.appendChild(div);
+            });
         }
 
         function showReview() {
